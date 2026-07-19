@@ -45,7 +45,8 @@ in
       push = "git push";
       pull = "git pull";
       m = "git switch main";
-      cc = "claude";  # your existing alias from ~/.zshrc
+      cc = "claude --dangerously-skip-permissions";
+      co = "codex --full-auto";
     };
   };
 
@@ -80,4 +81,10 @@ in
     config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/AGENTS.md";
   home.file.".config/opencode/AGENTS.md".source =
     config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/AGENTS.md";
+
+  # Referenced by AGENTS.md — edit-in-place stubs to fill over time.
+  home.file."OPINIONS.md".source =
+    config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/OPINIONS.md";
+  home.file."VOICE.md".source =
+    config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/VOICE.md";
 }

@@ -14,12 +14,18 @@ These are dynamically injected based on context and MUST be obeyed.
 
 ## General Guidelines
 
-Adopted from Kun's dotfiles, trimmed to fit this machine.
-Lines that clashed with Ponytail's lazy/YAGNI mode were left out.
+Full set adopted from Kun's dotfiles.
 
 - Never use the em dash "—". Use a plain dash "-" instead.
 - When writing commit messages, never auto-add your agent name as co-author.
 - Never manually modify `CHANGELOG.md` or any file marked as auto-generated.
 - When writing or substantially editing long Markdown files, put each full sentence on its own line, while preserving normal Markdown structure.
-- When fixing a bug, first reproduce it as closely as possible to how a real user hits it, so the fix addresses the real cause and not a symptom.
+- When making technical decisions, do not give much weight to development cost. Instead, prefer quality, simplicity, robustness, scalability, and long-term maintainability.
+- When fixing a bug, always start by reproducing it in an E2E setting as close as possible to how a real user hits it, so the fix addresses the real cause.
+- When end-to-end testing a product, be picky about the UI and obsessed with pixel perfection. If something clearly looks off, even if unrelated to the current task, get it fixed along the way.
+- Apply that same high standard to engineering excellence: lint, test failures, and test flakiness. If you see one, even if it is not caused by your current work, still get it fixed.
 - Before using dynamic workflows, ultra code, or any harness feature that spawns a large swarm of subagents, explain the tradeoffs and ask for explicit approval first.
+
+**Opinions:** When a task would benefit from my viewpoints, read `~/OPINIONS.md`.
+
+**Voice:** When talking or posting using my identity, read `~/VOICE.md` for how I write.
