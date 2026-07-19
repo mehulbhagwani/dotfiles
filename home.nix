@@ -28,6 +28,16 @@ in
     syntaxHighlighting.enable = true;  # commands turn green when valid
     initContent = ''
       bindkey '^f' autosuggest-accept
+
+      # --- ported from pre-Nix ~/.zshrc + ~/.zprofile on adoption ---
+      # Homebrew on PATH (nix-homebrew keeps brew at /opt/homebrew).
+      eval "$(/opt/homebrew/bin/brew shellenv)"
+      # User-local bins first — claude/cc lives in ~/.npm-global/bin.
+      export PATH="$HOME/.local/bin:$HOME/.npm-global/bin:$PATH"
+      # nvm
+      export NVM_DIR="$HOME/.nvm"
+      [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+      [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
     '';
     shellAliases = {
       ".." = "cd ..";
@@ -35,8 +45,7 @@ in
       push = "git push";
       pull = "git pull";
       m = "git switch main";
-      cc = "claude --dangerously-skip-permissions";
-      co = "codex --full-auto";
+      cc = "claude";  # your existing alias from ~/.zshrc
     };
   };
 
@@ -53,16 +62,18 @@ in
     };
   };
 
-  # Edit-in-place: the real file stays in my repo, ~/.config just points at it.
+  # Edit-in-place: the real files stay in ~/.dotfiles, ~/.config points at them.
+  # Re-adopted from Kun's config (wezterm look, nvim, herdr multiplexer).
   home.file.".config/wezterm".source =
     config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/.config/wezterm";
   home.file.".config/nvim".source =
     config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/.config/nvim";
   home.file.".config/herdr".source =
     config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/.config/herdr";
-  home.file.".claude/settings.json".source =
-    config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/.claude/settings.json";
 
+  # Kun's symlink trick: one shared AGENTS.md is the instruction file for every
+  # agent tool. Your CARL/PAUL block is preserved inside it. Editing
+  # ~/.dotfiles/home/AGENTS.md changes all three at once.
   home.file.".claude/CLAUDE.md".source =
     config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/AGENTS.md";
   home.file.".codex/AGENTS.md".source =

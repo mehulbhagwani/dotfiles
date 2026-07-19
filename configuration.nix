@@ -28,18 +28,25 @@
   nix-homebrew = {
     enable = true;
     inherit user;
+    # This Mac already has Homebrew at /opt/homebrew. Adopt it in place instead
+    # of failing/reinstalling on the first switch.
+    autoMigrate = true;
   };
   homebrew = {
     enable = true;
-    onActivation.cleanup = "zap";  # remove anything not listed here
+    # SAFETY: "none" never uninstalls anything not listed here. Do NOT set this
+    # to "zap"/"uninstall" until every existing package is declared below,
+    # or it will remove your current brews/casks. Inventory of what you have
+    # today is in ~/dotfiles-backup-2026-07-19/brew-{leaves,casks}.txt.
+    onActivation.cleanup = "none";
     onActivation.autoUpdate = true;
     onActivation.extraFlags = [ "--force" ];
+    # Curate from the backed-up inventory when ready. cleanup="none" so listing
+    # these installs them without removing anything else you already have.
     brews = [
-      "herdr"
+      "herdr"       # Kun's terminal agent multiplexer (herdr.dev)
     ];
     casks = [
-      "wezterm"
-      "claude-code"
     ];
   };
 }
