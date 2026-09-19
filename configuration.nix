@@ -66,6 +66,7 @@
       "codex"
       "ghostty"
       "hyperwhisper"
+      "localsend"
       "orbstack"
       "visual-studio-code"
       "wezterm"
