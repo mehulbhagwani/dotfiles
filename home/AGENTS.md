@@ -24,6 +24,9 @@ Section 2 is the Firstmate supervisor contract, incorporated whole.
 
 ### Quality bar
 
+- Before shipping any user-facing change, verify it end to end the way a user would actually reach it: through the real running product, not only unit tests, a passing build, or a green pipeline.
+  A change is not done because the tests pass. It is done when you have seen it work.
+  If end-to-end verification is genuinely not possible for a change, say so explicitly and name exactly what you verified instead. Never let that pass silently.
 - When doing bug fixes, always start with reproducing the bug in an E2E setting as closely aligned with how an end user would experience it as possible.
   This makes sure you find the real problem so your fix will actually solve it.
 - When end-to-end testing a product, be picky about the UI you see and be obsessed with pixel perfection.
