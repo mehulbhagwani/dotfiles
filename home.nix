@@ -9,11 +9,9 @@ in
   home.homeDirectory = "/Users/${user}";
   home.stateVersion = "24.11";
   home.packages = with pkgs; [
-    # cli i use constantly
-    ripgrep   # fast search
-    fd        # fast find
-    fzf       # fuzzy finder
-    jq        # json on the command line
+    # ripgrep, fd, fzf and jq are declared as brews in configuration.nix
+    # instead: Homebrew is first on PATH, so a Nix copy here would only ever
+    # be shadowed dead weight.
     lazygit
     neovim
     # the font everything renders in
@@ -22,22 +20,40 @@ in
   fonts.fontconfig.enable = true;
   home.sessionVariables.EDITOR = "nvim";
 
+  # OrbStack keeps docker, compose, kubectl and orb inside its app bundle.
+  # Its own installer only wires ~/.orbstack/bin once the app has been run,
+  # so pointing at the bundle gives a working CLI without launching it.
+  home.sessionPath = [
+    "/Applications/OrbStack.app/Contents/MacOS/xbin"
+    "/Applications/OrbStack.app/Contents/MacOS/bin"
+  ];
+
+  # chrome-devtools-axi drives Brave, this machine's browser, not Chrome.
+  home.sessionVariables.CHROME_DEVTOOLS_AXI_EXECUTABLE_PATH =
+    "/Applications/Brave Browser.app/Contents/MacOS/Brave Browser";
+
+  # The -axi command line tools are global npm packages, so neither Nix nor
+  # Homebrew knows about them and a fresh machine would come up without any.
+  home.activation.npmGlobals =
+    config.lib.dag.entryAfter [ "writeBoundary" ] ''
+      run ${dotfiles}/scripts/npm-globals.sh
+    '';
+
+  # `npm update -g` reverts the patch that teaches chrome-devtools-axi to launch
+  # Brave, so re-applying it here is what keeps the setting from rotting. Runs
+  # after npmGlobals so a freshly installed copy gets patched too.
+  home.activation.chromeDevtoolsAxiBrave =
+    config.lib.dag.entryAfter [ "npmGlobals" ] ''
+      run ${dotfiles}/scripts/chrome-devtools-axi-brave.sh
+    '';
+
   programs.zsh = {
     enable = true;
     autosuggestion.enable = true;      # ghost text from history
     syntaxHighlighting.enable = true;  # commands turn green when valid
     initContent = ''
       bindkey '^f' autosuggest-accept
-
-      # --- ported from pre-Nix ~/.zshrc + ~/.zprofile on adoption ---
-      # Homebrew on PATH (nix-homebrew keeps brew at /opt/homebrew).
-      eval "$(/opt/homebrew/bin/brew shellenv)"
-      # User-local bins first — claude/cc lives in ~/.npm-global/bin.
-      export PATH="$HOME/.local/bin:$HOME/.npm-global/bin:$PATH"
-      # nvm
-      export NVM_DIR="$HOME/.nvm"
-      [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-      [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
+      eval "$(direnv hook zsh)"
     '';
     shellAliases = {
       ".." = "cd ..";
@@ -45,7 +61,7 @@ in
       push = "git push";
       pull = "git pull";
       m = "git switch main";
-      cc = "claude --dangerously-skip-permissions";
+      cc = "claude --dangerously-skip-permissions --autocompact 500000";
       co = "codex --full-auto";
     };
   };
@@ -63,28 +79,32 @@ in
     };
   };
 
-  # Edit-in-place: the real files stay in ~/.dotfiles, ~/.config points at them.
-  # Re-adopted from Kun's config (wezterm look, nvim, herdr multiplexer).
+  # Edit-in-place: the real file stays in my repo, ~/.config just points at it.
   home.file.".config/wezterm".source =
     config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/.config/wezterm";
   home.file.".config/nvim".source =
     config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/.config/nvim";
-  home.file.".config/herdr".source =
-    config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/.config/herdr";
+  # herdr owns ~/.config/herdr at runtime (sockets, logs, session.json), so link
+  # only the authored file - same reasoning as the .pi entries below.
+  home.file.".config/herdr/config.toml".source =
+    config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/.config/herdr/config.toml";
+  home.file.".claude/settings.json".source =
+    config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/.claude/settings.json";
 
-  # Kun's symlink trick: one shared AGENTS.md is the instruction file for every
-  # agent tool. Your CARL/PAUL block is preserved inside it. Editing
-  # ~/.dotfiles/home/AGENTS.md changes all three at once.
+  # Keep Pi's credential and runtime state local by linking only authored files and directories.
+  home.file.".pi/agent/themes".source =
+    config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/.pi/agent/themes";
+  home.file.".pi/agent/extensions".source =
+    config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/.pi/agent/extensions";
+  home.file.".pi/agent/models.json".source =
+    config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/.pi/agent/models.json";
+  home.file.".pi/agent/settings.json".source =
+    config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/.pi/agent/settings.json";
+
   home.file.".claude/CLAUDE.md".source =
     config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/AGENTS.md";
   home.file.".codex/AGENTS.md".source =
     config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/AGENTS.md";
   home.file.".config/opencode/AGENTS.md".source =
     config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/AGENTS.md";
-
-  # Referenced by AGENTS.md — edit-in-place stubs to fill over time.
-  home.file."OPINIONS.md".source =
-    config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/OPINIONS.md";
-  home.file."VOICE.md".source =
-    config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/VOICE.md";
 }

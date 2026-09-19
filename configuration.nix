@@ -26,27 +26,59 @@
     trackpad.Clicking = true;              # tap to click
   };
   nix-homebrew = {
+    autoMigrate = true;
     enable = true;
     inherit user;
-    # This Mac already has Homebrew at /opt/homebrew. Adopt it in place instead
-    # of failing/reinstalling on the first switch.
-    autoMigrate = true;
   };
   homebrew = {
     enable = true;
-    # SAFETY: "none" never uninstalls anything not listed here. Do NOT set this
-    # to "zap"/"uninstall" until every existing package is declared below,
-    # or it will remove your current brews/casks. Inventory of what you have
-    # today is in ~/dotfiles-backup-2026-07-19/brew-{leaves,casks}.txt.
-    onActivation.cleanup = "none";
+    onActivation.cleanup = "zap";  # remove anything not listed here
     onActivation.autoUpdate = true;
     onActivation.extraFlags = [ "--force" ];
-    # Curate from the backed-up inventory when ready. cleanup="none" so listing
-    # these installs them without removing anything else you already have.
     brews = [
-      "herdr"       # Kun's terminal agent multiplexer (herdr.dev)
+      "age"
+      "atuin"
+      "bat"
+      "direnv"
+      "exiftool"
+      "eza"
+      "fd"
+      "ffmpeg"
+      "fzf"
+      "gh"
+      "git"
+      "git-delta"
+      "git-lfs"
+      "herdr"
+      "hyperfine"
+      "imagemagick"
+      "jq"
+      "mise"
+      "node"
+      "opencode"
+      "pi-coding-agent"
+      "repomix"
+      "ripgrep"
+      "sops"
+      "tmux"
+      "tree"
+      "uv"
+      "watchexec"
+      "wget"
+      "yt-dlp"
+      "zoxide"
     ];
     casks = [
+      "baby-menu"
+      "brave-browser"
+      "claude-code"
+      "codex"
+      "ghostty"
+      "hyperwhisper"
+      "localsend"
+      "orbstack"
+      "visual-studio-code"
+      "wezterm"
     ];
   };
 }
