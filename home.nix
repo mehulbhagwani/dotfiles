@@ -9,11 +9,9 @@ in
   home.homeDirectory = "/Users/${user}";
   home.stateVersion = "24.11";
   home.packages = with pkgs; [
-    # cli i use constantly
-    ripgrep   # fast search
-    fd        # fast find
-    fzf       # fuzzy finder
-    jq        # json on the command line
+    # ripgrep, fd, fzf and jq are declared as brews in configuration.nix
+    # instead: Homebrew is first on PATH, so a Nix copy here would only ever
+    # be shadowed dead weight.
     lazygit
     neovim
     # the font everything renders in
