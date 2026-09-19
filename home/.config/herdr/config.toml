@@ -20,5 +20,8 @@ copy_mode  = "prefix+y"  # herdr's copy-mode entry key; copy-mode's own internal
 agent_panel_sort = "spaces"
 
 [theme]
-name = "tokyo-night"
+name = "dracula"
 auto_switch = false
+
+[ui.sound]
+enabled = false
