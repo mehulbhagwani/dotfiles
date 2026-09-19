@@ -26,6 +26,7 @@
     trackpad.Clicking = true;              # tap to click
   };
   nix-homebrew = {
+    autoMigrate = true;
     enable = true;
     inherit user;
   };
@@ -35,11 +36,35 @@
     onActivation.autoUpdate = true;
     onActivation.extraFlags = [ "--force" ];
     brews = [
+      "bat"
+      "exiftool"
+      "eza"
+      "fd"
+      "ffmpeg"
+      "fzf"
+      "gh"
+      "git"
       "herdr"
+      "imagemagick"
+      "jq"
+      "pi-coding-agent"
+      "ripgrep"
+      "tmux"
+      "tree"
+      "uv"
+      "wget"
+      "yt-dlp"
+      "zoxide"
     ];
     casks = [
-      "wezterm"
+      "baby-menu"
       "claude-code"
+      "codex"
+      "ghostty"
+      "hyperwhisper"
+      "orbstack"
+      "visual-studio-code"
+      "wezterm"
     ];
   };
 }
