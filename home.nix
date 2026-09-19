@@ -21,6 +21,17 @@ in
   ];
   fonts.fontconfig.enable = true;
   home.sessionVariables.EDITOR = "nvim";
+  # chrome-devtools-axi drives Brave, this machine's browser, not Chrome.
+  home.sessionVariables.CHROME_DEVTOOLS_AXI_EXECUTABLE_PATH =
+    "/Applications/Brave Browser.app/Contents/MacOS/Brave Browser";
+
+  # That tool is a global npm package, outside both Nix and Homebrew, so
+  # `npm update -g` reverts the patch that teaches it to launch Brave.
+  # Re-applying on every rebuild is what keeps the setting from rotting.
+  home.activation.chromeDevtoolsAxiBrave =
+    config.lib.dag.entryAfter [ "writeBoundary" ] ''
+      run ${dotfiles}/scripts/chrome-devtools-axi-brave.sh
+    '';
 
   programs.zsh = {
     enable = true;
@@ -28,6 +39,7 @@ in
     syntaxHighlighting.enable = true;  # commands turn green when valid
     initContent = ''
       bindkey '^f' autosuggest-accept
+      eval "$(direnv hook zsh)"
     '';
     shellAliases = {
       ".." = "cd ..";
@@ -35,7 +47,7 @@ in
       push = "git push";
       pull = "git pull";
       m = "git switch main";
-      cc = "claude --dangerously-skip-permissions";
+      cc = "claude --dangerously-skip-permissions --autocompact 500000";
       co = "codex --full-auto";
     };
   };
@@ -58,8 +70,10 @@ in
     config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/.config/wezterm";
   home.file.".config/nvim".source =
     config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/.config/nvim";
-  home.file.".config/herdr".source =
-    config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/.config/herdr";
+  # herdr owns ~/.config/herdr at runtime (sockets, logs, session.json), so link
+  # only the authored file - same reasoning as the .pi entries below.
+  home.file.".config/herdr/config.toml".source =
+    config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/.config/herdr/config.toml";
   home.file.".claude/settings.json".source =
     config.lib.file.mkOutOfStoreSymlink "${dotfiles}/home/.claude/settings.json";
 

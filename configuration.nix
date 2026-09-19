@@ -37,6 +37,7 @@
     onActivation.extraFlags = [ "--force" ];
     brews = [
       "bat"
+      "direnv"
       "exiftool"
       "eza"
       "fd"
@@ -47,6 +48,8 @@
       "herdr"
       "imagemagick"
       "jq"
+      "node"
+      "opencode"
       "pi-coding-agent"
       "ripgrep"
       "tmux"
@@ -58,6 +61,7 @@
     ];
     casks = [
       "baby-menu"
+      "brave-browser"
       "claude-code"
       "codex"
       "ghostty"
