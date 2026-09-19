@@ -21,15 +21,31 @@ in
   ];
   fonts.fontconfig.enable = true;
   home.sessionVariables.EDITOR = "nvim";
+
+  # OrbStack keeps docker, compose, kubectl and orb inside its app bundle.
+  # Its own installer only wires ~/.orbstack/bin once the app has been run,
+  # so pointing at the bundle gives a working CLI without launching it.
+  home.sessionPath = [
+    "/Applications/OrbStack.app/Contents/MacOS/xbin"
+    "/Applications/OrbStack.app/Contents/MacOS/bin"
+  ];
+
   # chrome-devtools-axi drives Brave, this machine's browser, not Chrome.
   home.sessionVariables.CHROME_DEVTOOLS_AXI_EXECUTABLE_PATH =
     "/Applications/Brave Browser.app/Contents/MacOS/Brave Browser";
 
-  # That tool is a global npm package, outside both Nix and Homebrew, so
-  # `npm update -g` reverts the patch that teaches it to launch Brave.
-  # Re-applying on every rebuild is what keeps the setting from rotting.
-  home.activation.chromeDevtoolsAxiBrave =
+  # The -axi command line tools are global npm packages, so neither Nix nor
+  # Homebrew knows about them and a fresh machine would come up without any.
+  home.activation.npmGlobals =
     config.lib.dag.entryAfter [ "writeBoundary" ] ''
+      run ${dotfiles}/scripts/npm-globals.sh
+    '';
+
+  # `npm update -g` reverts the patch that teaches chrome-devtools-axi to launch
+  # Brave, so re-applying it here is what keeps the setting from rotting. Runs
+  # after npmGlobals so a freshly installed copy gets patched too.
+  home.activation.chromeDevtoolsAxiBrave =
+    config.lib.dag.entryAfter [ "npmGlobals" ] ''
       run ${dotfiles}/scripts/chrome-devtools-axi-brave.sh
     '';
 
