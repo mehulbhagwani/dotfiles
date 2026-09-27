@@ -39,6 +39,13 @@ in
       run ${dotfiles}/scripts/npm-globals.sh
     '';
 
+  # Kun skills are git clones, not copies baked into this repo. A rebuild
+  # fetches the declared set and links them for Claude and Pi.
+  home.activation.kunSkills =
+    config.lib.dag.entryAfter [ "writeBoundary" ] ''
+      run ${dotfiles}/scripts/kun-sync.sh
+    '';
+
   # `npm update -g` reverts the patch that teaches chrome-devtools-axi to launch
   # Brave, so re-applying it here is what keeps the setting from rotting. Runs
   # after npmGlobals so a freshly installed copy gets patched too.

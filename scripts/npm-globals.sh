@@ -6,15 +6,15 @@
 # none of them. Homebrew's `node` (declared in configuration.nix) is what they
 # stand on; that dependency used to be transitive through pi-coding-agent.
 #
-# Deliberately unpinned: these ship often and are meant to track latest, the
-# same way they were installed by hand. Already-installed packages are left
-# exactly as they are, so this never downgrades or churns a working machine.
+# Deliberately unpinned: these ship often and are meant to track latest.
+# A rebuild installs anything missing and updates the declared set.
 set -euo pipefail
 
 # Activation runs with a minimal PATH; npm lives in the Homebrew prefix.
 export PATH="/opt/homebrew/bin:$PATH"
 
 PACKAGES=(
+  "@kunchenguid/m87"
   "@nikolauska/sentry-axi"
   az-axi
   backpass
@@ -23,6 +23,7 @@ PACKAGES=(
   council-axi
   doctl-axi
   gh-axi
+  gnhf
   gws-axi
   lavish-axi
   linear-sdk-axi
@@ -34,21 +35,9 @@ PACKAGES=(
 
 command -v npm >/dev/null 2>&1 || { echo "npm-globals: npm not found, skipping"; exit 0; }
 
-installed="$(npm ls -g --depth=0 --parseable 2>/dev/null || true)"
+# A root-owned npm cache from an older sudo install must not block updates.
+export npm_config_cache="${npm_config_cache:-$HOME/.cache/npm}"
+mkdir -p "$npm_config_cache"
 
-missing=()
-for pkg in "${PACKAGES[@]}"; do
-  # --parseable prints one install path per line, ending in the package name.
-  case "$installed" in
-    *"/node_modules/$pkg"$'\n'*|*"/node_modules/$pkg") ;;
-    *) missing+=("$pkg") ;;
-  esac
-done
-
-if [ ${#missing[@]} -eq 0 ]; then
-  echo "npm-globals: all ${#PACKAGES[@]} present"
-  exit 0
-fi
-
-echo "npm-globals: installing ${missing[*]}"
-npm install -g "${missing[@]}"
+echo "npm-globals: installing or updating ${#PACKAGES[@]} packages"
+npm install -g "${PACKAGES[@]}"
