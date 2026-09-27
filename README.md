@@ -62,10 +62,10 @@ Once Nix is installed (`bootstrap.sh` step 1 handles that), you can check that t
 
 ```sh
 nix flake check --no-build
-nix build .#darwinConfigurations.mac.system --dry-run
+nix build .#darwinConfigurations.rac.system --dry-run
 ```
 
-If you renamed the host label in "Make it yours", substitute your label for `mac` in these commands.
+On Mehul-Mac, substitute `mehul-mac` for `rac`.
 
 ## Daily use
 
@@ -83,10 +83,12 @@ No separate build-and-copy step.
 This repo is mine.
 If you clone it, review these before you run `bootstrap.sh`:
 
-- **Username**: run `./bootstrap.sh` (it detects your macOS username and offers to set it) OR change the single `user = "rac"` line in `flake.nix`.
-  Everything else (`configuration.nix`, `home.nix`, home directory paths) is threaded from that one variable.
-- **Host label** `"mac"`, in three places: `flake.nix` (the `darwinConfigurations."mac"` name), `rebuild.sh:5` (the `#mac` at the end of the flake reference), and `bootstrap.sh`'s first-switch command (also `#mac`).
-  All three have to match.
+- **Which Mac**: `hosts.nix` names two machines.
+  `rac` is the office MacBook Pro (macOS user `rac`).
+  `mehul-mac` is the personal Mac (macOS user `mehul`, Computer Name Mehul-Mac).
+  `./rebuild.sh` and `./bootstrap.sh` pick from the logged-in user and Computer Name.
+  Pass the name if detection is wrong: `./rebuild.sh rac` or `./rebuild.sh mehul-mac`.
+  If Mehul-Mac's short username is not `mehul`, change only that `user` in `hosts.nix`.
 - **CPU architecture**, `hostPlatform` in `configuration.nix` (see Prerequisites above).
 
 **Git identity:** this config deliberately does not set your git name or email.
@@ -103,10 +105,10 @@ programs.git = {
 };
 ```
 
-**Homebrew cleanup warning:** `configuration.nix` sets `homebrew.onActivation.cleanup = "zap"`.
-That means every time you switch, Homebrew removes any package or cask on your machine that isn't listed in the `brews` and `casks` arrays in `configuration.nix`.
-If you already have Homebrew stuff installed that isn't in that list, the first switch will uninstall it.
-Read through `brews` and `casks` before you run `bootstrap.sh` or `rebuild.sh` for the first time, and add anything you want to keep.
+**Homebrew cleanup warning:** `configuration.nix` sets `homebrew.onActivation.cleanup = "uninstall"`.
+Every switch removes Homebrew packages and casks that are not listed in `brews` and `casks`.
+It does not zap their app data.
+Add anything you want to keep to that list before the first switch on a machine that already has Homebrew.
 
 **About `herdr`:** it's in the `brews` list.
 It's a real public Homebrew formula (`brew info herdr` finds it in homebrew-core, no tap needed), so it will install fine.

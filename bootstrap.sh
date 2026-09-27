@@ -20,28 +20,29 @@ echo "==> Step 2: symlink this repo to ~/.dotfiles"
 # has to exist before the first switch or the build will fail to find them.
 ln -sfn "$DIR" ~/.dotfiles
 
-echo "==> Step 3: personalize the configured username"
-# Do this before any sudo call: sudo resets $USER to root, so whoami has to
-# run as the real interactive user first.
+echo "==> Step 3: pick this Mac"
+# Do this before any sudo call: sudo resets $USER to root.
 REAL_USER="$(whoami)"
-FLAKE_USER="$(sed -nE 's/^[[:space:]]*user = "([^"]+)";.*/\1/p' "$DIR/flake.nix" | head -n1)"
-if [ -z "$FLAKE_USER" ]; then
-  echo "    Could not find the single \"user = \" line in flake.nix."
-  echo "    Edit flake.nix yourself before continuing."
-  exit 1
-elif [ "$FLAKE_USER" != "$REAL_USER" ]; then
-  echo "    flake.nix is configured for user \"$FLAKE_USER\", but you are \"$REAL_USER\"."
-  read -r -p "    Rewrite flake.nix's \"user = \" line to \"$REAL_USER\"? [y/N] " REPLY
-  if [ "$REPLY" = "y" ] || [ "$REPLY" = "Y" ]; then
-    sed -i '' -E "s/^([[:space:]]*user = \")[^\"]+(\";.*)/\1${REAL_USER}\2/" "$DIR/flake.nix"
-    echo "    Updated. Review the change with: git diff flake.nix"
-  else
-    echo "    Skipped. Edit the single \"user = \" line in flake.nix yourself before continuing."
-    exit 1
-  fi
+COMPUTER_NAME="$(scutil --get ComputerName 2>/dev/null || true)"
+if [ -n "${1:-}" ]; then
+  HOST="$1"
+elif [ "$REAL_USER" = "rac" ]; then
+  HOST="rac"
+elif [ "$REAL_USER" = "mehul" ] || [[ "$COMPUTER_NAME" == Mehul* ]]; then
+  HOST="mehul-mac"
 else
-  echo "    flake.nix already matches \"$REAL_USER\", nothing to do."
+  echo "    Could not tell which machine this is (user=$REAL_USER computer=${COMPUTER_NAME:-unknown})."
+  echo "    Run: ./bootstrap.sh rac    or    ./bootstrap.sh mehul-mac"
+  exit 1
 fi
+case "$HOST" in
+  rac|mehul-mac) ;;
+  *)
+    echo "    Unknown host '$HOST'. Use rac or mehul-mac."
+    exit 1
+    ;;
+esac
+echo "    applying darwinConfigurations.$HOST (user from hosts.nix)"
 
 echo "==> Step 4: first darwin-rebuild switch (pinned to nix-darwin-26.05)"
 # darwin-rebuild doesn't exist yet on a fresh machine, so run it straight
@@ -53,10 +54,9 @@ echo "==> Step 4: first darwin-rebuild switch (pinned to nix-darwin-26.05)"
 # freshly installed `nix` would not be found under sudo even though it's
 # on PATH here. Resolve the absolute path first and invoke that instead.
 NIX_BIN="$(command -v nix)"
-# "mac" is the flake host label - if you renamed it, change it in flake.nix
-# and rebuild.sh too.
+# Host names live in hosts.nix. Step 3 picked $HOST.
 sudo "$NIX_BIN" run github:nix-darwin/nix-darwin/nix-darwin-26.05#darwin-rebuild -- \
-  switch --flake ~/.dotfiles#mac
+  switch --flake ~/.dotfiles#"$HOST"
 # If this still fails with "nix: command not found", open a new terminal
 # (Determinate adds nix to new shells' PATH) and re-run ./bootstrap.sh.
 
