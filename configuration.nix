@@ -77,6 +77,7 @@
       "ghostty"
       "hyperwhisper"
       "localsend"
+      "kunchenguid/tap/pi-launcher"
       "orbstack"
       "visual-studio-code"
       "wezterm"

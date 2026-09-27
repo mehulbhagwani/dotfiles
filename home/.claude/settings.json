@@ -63,6 +63,7 @@
       }
     }
   },
+  "model": "opus",
   "skipDangerousModePermissionPrompt": true,
   "theme": "dark-ansi",
   "agentPushNotifEnabled": true
