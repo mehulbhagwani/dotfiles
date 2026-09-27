@@ -22,7 +22,7 @@
   ],
   "lastChangelogVersion": "0.87.1",
   "defaultProvider": "openai-codex",
-  "defaultModel": "gpt-5.5",
+  "defaultModel": "gpt-5.6-luna",
   "skills": [
     "~/.pi/agent/git/github.com/anthropics/financial-services/plugins/vertical-plugins",
     "~/.pi/agent/git/github.com/anthropics/financial-services/plugins/partner-built",
