@@ -32,7 +32,8 @@
   };
   homebrew = {
     enable = true;
-    onActivation.cleanup = "zap";  # remove anything not listed here
+    # uninstall drops packages not in this file; zap also deletes their app data.
+    onActivation.cleanup = "uninstall";
     onActivation.autoUpdate = true;
     onActivation.extraFlags = [ "--force" ];
     brews = [
@@ -71,7 +72,7 @@
     casks = [
       "baby-menu"
       "brave-browser"
-      "claude-code"
+      "claude-code@latest"
       "codex"
       "ghostty"
       "hyperwhisper"

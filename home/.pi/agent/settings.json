@@ -13,9 +13,19 @@
   "collapseChangelog": true,
   "packages": [
     "npm:pi-web-access@0.14.0",
-    "npm:@ryan_nookpi/pi-extension-codex-fast-mode@0.2.6"
+    "npm:@ryan_nookpi/pi-extension-codex-fast-mode@0.2.6",
+    "https://github.com/mattpocock/skills",
+    "https://github.com/anthropics/financial-services",
+    "~/.pi/agent/local-packages/ai-memory-pi",
+    "https://github.com/obra/superpowers.git",
+    "https://github.com/pbakaus/impeccable.git"
   ],
-  "lastChangelogVersion": "0.85.1",
+  "lastChangelogVersion": "0.87.1",
   "defaultProvider": "openai-codex",
-  "defaultModel": "gpt-5.5"
+  "defaultModel": "gpt-5.5",
+  "skills": [
+    "~/.pi/agent/git/github.com/anthropics/financial-services/plugins/vertical-plugins",
+    "~/.pi/agent/git/github.com/anthropics/financial-services/plugins/partner-built",
+    "~/.pi/agent/git/github.com/anthropics/financial-services/plugins/agent-plugins"
+  ]
 }
