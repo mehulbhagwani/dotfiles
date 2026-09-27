@@ -55,6 +55,9 @@ echo "==> Step 4: first darwin-rebuild switch (pinned to nix-darwin-26.05)"
 # on PATH here. Resolve the absolute path first and invoke that instead.
 NIX_BIN="$(command -v nix)"
 # Host names live in hosts.nix. Step 3 picked $HOST.
+if command -v brew >/dev/null 2>&1 && brew tap | grep -qx 'kunchenguid/tap'; then
+  brew trust kunchenguid/tap || true
+fi
 sudo "$NIX_BIN" run github:nix-darwin/nix-darwin/nix-darwin-26.05#darwin-rebuild -- \
   switch --flake ~/.dotfiles#"$HOST"
 # If this still fails with "nix: command not found", open a new terminal

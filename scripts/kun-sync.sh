@@ -4,6 +4,14 @@
 # rebuild is enough; the script is also safe to run on its own.
 set -euo pipefail
 
+# Home Manager activation uses a minimal PATH. git and gh are Homebrew
+# packages, so they are invisible unless this prefix is added first.
+export PATH="/opt/homebrew/bin:/usr/local/bin:$PATH"
+if ! command -v git >/dev/null 2>&1; then
+  echo "kun-sync: git is not on PATH. Install the git brew from configuration.nix, then rebuild." >&2
+  exit 1
+fi
+
 ROOT="${KUN_SKILLS_ROOT:-$HOME/.local/share/kun-skills}"
 AGENTS="${KUN_AGENTS_SKILLS:-$HOME/.agents/skills}"
 PI="${KUN_PI_SKILLS:-$HOME/.pi/agent/skills}"
