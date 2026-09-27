@@ -79,6 +79,7 @@
       "localsend"
       "kunchenguid/tap/pi-launcher"
       "orbstack"
+      "obsidian"
       "visual-studio-code"
       "wezterm"
     ];
