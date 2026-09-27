@@ -48,6 +48,7 @@
       "fzf"
       "gh"
       "git"
+      "handbrake"
       "git-delta"
       "git-lfs"
       "herdr"
@@ -70,7 +71,6 @@
       "zoxide"
     ];
     casks = [
-      "baby-menu"
       "brave-browser"
       "claude-code@latest"
       "codex"
